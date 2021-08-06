@@ -1,0 +1,18 @@
+{% for todo in todos  %}
+
+<li class="list-group-item d-flex justify-content-between">
+  {{todo.name}}
+  <input type="hidden" value="{{todo.name}}" name="todo_name" id="todo_{{todo.id}}"/>
+  <div>
+
+    <button id="edit" class="btn btn-success btn-sm" type="submit">Edit</button>
+    <button id="delete" 
+            class="btn btn-danger btn-sm" hx-trigger="click" hx-post="{% url 'todo-delete'  %}" 
+                                                             hx-include="[name=csrfmiddlewaretoken], [id='todo_{{todo.id}}']"
+                                                             hx-confirm="are you sure?" hx-target="closest li"
+                                                                                        >Delete</button>
+
+
+  </div>
+</li>
+{% endfor %}

@@ -1,5 +1,8 @@
-from django.shortcuts import render
-from django.http import JsonResponse
+from django.shortcuts import render, redirect
+from django.http import JsonResponse, HttpResponse
+from django.contrib import messages
+
+from django.urls import reverse
 
 from .models import TODO
 
@@ -9,7 +12,8 @@ def home(request):
 
 def todo_list(request):
     todos = TODO.objects.all()
-    return JsonResponse({'todos': list(todos.values())})
+    context = {'todos': list(todos.values())}
+    return render(request, "_todo_list.html", context)
 
 def todo_create(request):
     if request.method == 'POST':
@@ -18,10 +22,14 @@ def todo_create(request):
 
         # we need to make sure that this todo does not exist in the database
         if todo.exists():
-            return JsonResponse({'status': 'error'})
-
-        todo = TODO.objects.create(name=todo_name)
-        return JsonResponse({'todo_name': todo.name, 'status': 'created'})
+            messages.error(request, "todo exists")
+        else:
+            messages.info(request, "todo added")
+            TODO.objects.create(name=todo_name)
+    response = HttpResponse("")
+    response["HX-Redirect"]=reverse("home")
+    response["HX-Refresh"]=True
+    return response
     
 def todo_edit(request):
     if request.method == "POST":
@@ -62,4 +70,6 @@ def todo_delete(request):
     if request.method == 'POST':
         todo_name = request.POST.get('todo_name')
         TODO.objects.filter(name=todo_name).delete()
-        return JsonResponse({'status': "deleted"})   
+        messages.info(request, "post deleted")
+    response = HttpResponse()
+    return response
