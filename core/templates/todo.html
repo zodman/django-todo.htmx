@@ -15,10 +15,6 @@
   <body>
     {% csrf_token %}
     <div class="container mt-5">
-      <div hx-get="{%url 'messages' %}" path-deps="/*" hx-trigger="path-deps">
-        {% include "_messages.html" %}
-      </div>
-
       <form class="row mt-5 pt-5" id="form" >
         <div class="col-12 col-lg-6 offset-lg-2">
           <div class="input-group">

@@ -6,11 +6,11 @@
   <div>
 
     <button id="edit" class="btn btn-success btn-sm" type="submit">Edit</button>
-    <button id="delete" 
-            class="btn btn-danger btn-sm" hx-trigger="click" hx-post="{% url 'todo-delete'  %}" 
-                                                             hx-include="[name=csrfmiddlewaretoken], [id='todo_{{todo.id}}']"
-                                                             hx-confirm="are you sure?" hx-target="closest li"
-                                                                                        >Delete</button>
+    <button id="delete" class="btn btn-danger btn-sm" hx-trigger="click" hx-post="{% url 'todo-delete'  %}" 
+       hx-include="[name=csrfmiddlewaretoken], [id='todo_{{todo.id}}']" 
+       hx-confirm="are you sure?" hx-target="closest li" hx-swap="outerHTML">
+        Delete
+    </button>
 
 
   </div>
