@@ -1,11 +1,36 @@
 {% for todo in todos  %}
 
 <li class="list-group-item d-flex justify-content-between">
+  <small>{{todo.id}}</small>
+  {% if todo.completed %}
+  <span>
+    <del>
+    {{todo.name}}
+    </del>
+  </span>
+   {% else %}
+ <span>
   {{todo.name}}
+ </span>     
+  {% endif %}
   <input type="hidden" value="{{todo.name}}" name="todo_name" id="todo_{{todo.id}}"/>
+  <input type="hidden" value="{{todo.completed|yesno:'0,1'}}" name="completed" id="todo_complete_{{todo.id}}"/>
   <div>
-
-    <button id="edit" class="btn btn-success btn-sm" type="submit">Edit</button>
+      <button id="complete" class="btn btn-primary btn-sm"
+        hx-trigger="click" hx-post="{% url 'todo-mark' %}" 
+       hx-boost="true"
+        hx-include="[name=csrfmiddlewaretoken], [id='todo_complete_{{todo.id}}'], [id='todo_{{todo.id}}']">
+    {% if not todo.completed %}
+       Complete it
+        {% else %}
+         Mark Uncomplete 
+    {% endif %}
+      </button>
+      <button id="edit" class="btn btn-success btn-sm" 
+        hx-target="#form"
+        hx-get="{% url 'todo-edit' todo.id %}" hx-trigger="click">
+        Edit
+      </button>
     <button id="delete" class="btn btn-danger btn-sm" hx-trigger="click" hx-post="{% url 'todo-delete'  %}" 
        hx-include="[name=csrfmiddlewaretoken], [id='todo_{{todo.id}}']" 
        hx-confirm="are you sure?" hx-target="closest li" hx-swap="outerHTML">

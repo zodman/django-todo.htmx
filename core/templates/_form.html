@@ -1,0 +1,8 @@
+<div class="col-12 col-lg-6 offset-lg-2">
+  <div class="input-group">
+    <input type="text" class="form-control" name="todo_name" id="todo_name" placeholder="Add a todo" required>
+    <button hx-trigger="click" hx-post="{% url 'todo-create' %}" 
+           hx-include="[name=csrfmiddlewaretoken]" class="text-white btn btn-info">Submit</button>
+  </div>
+</div>
+

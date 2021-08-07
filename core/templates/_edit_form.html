@@ -1,0 +1,8 @@
+<div class="col-12 col-lg-6 offset-lg-2">
+  <div class="input-group">
+    <input type="text" class="form-control" name="new_todo_name" id="todo_name" value="{{todo.name}}" required>
+    <button hx-trigger="click" hx-post="{% url 'todo-edit' todo.id %}" 
+           hx-include="[name=csrfmiddlewaretoken]" class="text-white btn btn-info">Edit</button>
+  </div>
+</div>
+

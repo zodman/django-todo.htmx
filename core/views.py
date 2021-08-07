@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect
 from django.http import JsonResponse, HttpResponse
 from django.contrib import messages
+from django.views.decorators.http import require_http_methods
+
 
 from django.urls import reverse
 
@@ -30,41 +32,40 @@ def todo_create(request):
     response["HX-Redirect"]=reverse("home")
     response["HX-Refresh"]=True
     return response
-    
-def todo_edit(request):
-    if request.method == "POST":
-        todo_name = request.POST.get('todo_name')
-        # the `new_todo_name` variable will be None in this case
-        # because we didn't send it in the AJAX request
-        # we still need it in case the user wants to edit the todo's name
-        new_todo_name = request.POST.get('new_todo_name')
-        completed = request.POST.get('completed')
-        edited_todo = TODO.objects.get(name=todo_name)
-        
-        # if the `completed` variable is not None this means that the user
-        # want to mark the todo as complete/incomplete, otherwise the 
-        # user want to edit the todo's name
-        if completed:
-            if completed == '0':
-                edited_todo.completed = False
-                edited_todo.save()
-                return JsonResponse({'status': 'updated'})
-            elif completed == '1':
-                edited_todo.completed = True
-                edited_todo.save()
-                return JsonResponse({'status': 'updated'})
+ 
+@require_http_methods(["POST",])
+def todo_mark(request):
+    todo_name = request.POST.get('todo_name')
+    completed = request.POST.get('completed')
+    edited_todo = TODO.objects.get(name=todo_name)
+    if completed:
+        if completed == '0':
+            edited_todo.completed = False
+            edited_todo.save()
+        elif completed == '1':
+            edited_todo.completed = True
+            edited_todo.save()
+    resp = HttpResponse()
+    resp["HX-Refresh"]=True
+    resp["HX-Redirect"]=reverse("home")
+    return  resp
 
-        if TODO.objects.filter(name=new_todo_name).exists():
-            return JsonResponse({'status': 'error'})
-
-        edited_todo.name = new_todo_name
-        edited_todo.save()
-        
+@require_http_methods(["POST","GET"])
+def todo_edit(request, todo_id=None):
+    todo = TODO.objects.get(id=todo_id)
+    if request.method== "GET":
         context = {
-            'new_todo_name': new_todo_name,
-            'status': 'updated'
+            'todo': todo
         }
-        return JsonResponse(context)
+        return render(request, "_edit_form.html", context)
+    else:
+        new_todo_name = request.POST.get("new_todo_name")
+        todo.name = new_todo_name
+        todo.save()
+    response = HttpResponse()
+    response["HX-Redirect"]=reverse("home")
+    response["HX-Refresh"]=True
+    return response
     
 def todo_delete(request):
     if request.method == 'POST':
